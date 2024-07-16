@@ -24,6 +24,7 @@ jobs:
         working-directory: sgcmapp/
         run: npm install
       - name: Teste E2E
+        working-directory: sgcmapp/
         run: ng run sgcmapp:cypress-run
   
   deploy:
