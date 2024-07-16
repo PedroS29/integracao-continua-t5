@@ -1,0 +1,40 @@
+name: CD Front-end
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  ci:
+    name: CI Workflow Main
+    uses: ./.github/workflows/ci-frontend.yml
+  
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4      
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Cliente Angular
+        run: npm install -g @angular/cli@17.3.8
+      - name: Instalação de dependências
+        working-directory: sgcmapp/
+        run: npm install
+      - name: Teste E2E
+        run: ng run sgcmapp:cypress-run
+  
+  deploy:
+    needs: [ci, e2e]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy
+        uses: johnbeynon/render-deploy-action@master
+        with:
+          service-id: ${{ secrets.RENDER_SERVICE_ID_FRONT_END }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
+          wait-for-success: true
